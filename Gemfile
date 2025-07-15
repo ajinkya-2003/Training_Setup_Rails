@@ -71,3 +71,7 @@ gem 'dotenv-rails'
 gem 'haml-rails'
 gem 'pg'
 gem 'devise'
+
+# API documentation and serialization
+gem 'apipie-rails'
+gem 'active_model_serializers'
