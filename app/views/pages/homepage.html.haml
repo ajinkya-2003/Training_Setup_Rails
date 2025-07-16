@@ -1,7 +1,6 @@
-.container.mt-5
-  .text-center
-    %h1 Welcome to My Rails App!
-    %p.lead This is your homepage.
-    %div.mt-4
-      %a.btn.btn-primary{ href: "#" } Register
-      %a.btn.btn-secondary.ms-3{ href: "#" } Login
+.container.text-center.mt-5
+  %h1.display-4 Welcome to My Rails App!
+  %p.lead This is your homepage.
+  .d-flex.justify-content-center.gap-2.mt-4
+    = link_to "Register", new_user_registration_path, class: "btn btn-primary btn-lg"
+    = link_to "Login", new_user_session_path, class: "btn btn-secondary btn-lg"
