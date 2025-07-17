@@ -2,8 +2,18 @@ module Api
   module V1
     class UsersController < ApplicationController
       include ActionController::MimeResponds
-
       skip_before_action :verify_authenticity_token
+
+      # ✅ Apipie param documentation (DRY)
+      def self.user_params_apipie_docs(required: false)
+        param :first_name, String, desc: 'First name of the user', required: required
+        param :last_name, String, desc: 'Last name of the user', required: required
+        param :email, String, desc: 'Email address', required: required
+        param :password, String, desc: 'Password', required: required
+        param :password_confirmation, String, desc: 'Password confirmation', required: required
+        param :age, :number, desc: 'Age of the user', required: required
+        param :date_of_birth, String, desc: 'Date of birth (YYYY-MM-DD)', required: required
+      end
 
       USER_RESPONSE_EXAMPLE = <<-EOS
       {
@@ -17,17 +27,16 @@ module Api
 
       # GET /api/v1/users
       api :GET, '/api/v1/users', 'Get all users'
-      description 'Returns a list of all users. Only id, first_name, last_name, email, and created_at are included.'
+      description 'Returns a list of all users.'
       example "[#{USER_RESPONSE_EXAMPLE.strip}]"
       def index
-        users = User.all
-        render json: users, each_serializer: UserSerializer
+        render json: User.all, each_serializer: UserSerializer
       end
 
       # GET /api/v1/users/:id
       api :GET, '/api/v1/users/:id', 'Get a user by ID'
-      param :id, :number, required: true, desc: 'ID of the user'
-      description 'Returns the details of a user by their ID'
+      param :id, :number, required: true, desc: 'User ID'
+      description 'Returns details of a single user.'
       example USER_RESPONSE_EXAMPLE
       def show
         user = User.find_by(id: params[:id])
@@ -40,15 +49,9 @@ module Api
 
       # POST /api/v1/users
       api :POST, '/api/v1/users', 'Create a new user'
-      param :first_name, String, required: true, desc: 'First name of the user'
-      param :last_name, String, required: true, desc: 'Last name of the user'
-      param :email, String, required: true, desc: 'Email address'
-      param :password, String, required: true, desc: 'Password'
-      param :password_confirmation, String, required: true, desc: 'Password confirmation'
-      param :age, :number, required: true, desc: 'Age of the user'
-      param :date_of_birth, String, required: true, desc: 'Date of birth (YYYY-MM-DD)'
+      user_params_apipie_docs(required: true)
       def create
-        outcome = Api::V1::Users::CreateUser.run(safe_user_params)
+        outcome = Api::V1::Users::CreateUser.run(build_user_params)
 
         if outcome.valid?
           render json: outcome.result, serializer: UserSerializer, status: :created
@@ -61,22 +64,44 @@ module Api
         render json: { errors: format_apipie_errors(e.message) }, status: :unprocessable_entity
       end
 
-      private
+      # PUT /api/v1/users/:id
+      api :PUT, '/api/v1/users/:id', 'Update an existing user'
+      param :id, :number, required: true, desc: 'User ID'
+      user_params_apipie_docs
+      def update
+        outcome = Api::V1::Users::UpdateUser.run(build_user_params.merge(id: params[:id]))
 
-      def safe_user_params
-        {
-          first_name: params[:first_name],
-          last_name: params[:last_name],
-          email: params[:email],
-          password: params[:password],
-          password_confirmation: params[:password_confirmation],
-          age: params[:age].to_i,
-          date_of_birth: parse_dob(params[:date_of_birth])
-        }
+        if outcome.valid?
+          render json: outcome.result, serializer: UserSerializer, status: :ok
+        else
+          render json: { errors: outcome.errors.full_messages }, status: :unprocessable_entity
+        end
+      rescue Date::Error, TypeError, ArgumentError
+        render_invalid_date_error
+      rescue Apipie::ParamMissing, Apipie::ParamMultipleMissing => e
+        render json: { errors: format_apipie_errors(e.message) }, status: :unprocessable_entity
       end
 
-      def parse_dob(dob)
-        dob.present? ? Date.parse(dob) : nil
+      private
+
+      def permitted_user_attributes
+        params.permit(
+          :first_name, :last_name, :email,
+          :password, :password_confirmation,
+          :age, :date_of_birth
+        ).to_h.symbolize_keys
+      end
+
+      def build_user_params
+        attrs = permitted_user_attributes
+        attrs[:age] = attrs[:age].to_i if attrs[:age].present?
+        attrs[:date_of_birth] = parse_date_field(attrs[:date_of_birth])
+        attrs
+      end
+
+      def parse_date_field(date_string)
+        return nil if date_string.blank?
+        Date.parse(date_string)
       end
 
       def render_invalid_date_error
