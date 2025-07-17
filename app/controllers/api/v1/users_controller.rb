@@ -4,7 +4,7 @@ module Api
       include ActionController::MimeResponds
       skip_before_action :verify_authenticity_token
 
-      # ✅ Apipie param documentation (DRY)
+      #Apipie param documentation (DRY)
       def self.user_params_apipie_docs(required: false)
         param :first_name, String, desc: 'First name of the user', required: required
         param :last_name, String, desc: 'Last name of the user', required: required
@@ -80,6 +80,25 @@ module Api
         render_invalid_date_error
       rescue Apipie::ParamMissing, Apipie::ParamMultipleMissing => e
         render json: { errors: format_apipie_errors(e.message) }, status: :unprocessable_entity
+      end
+
+      # DELETE /api/v1/users/:id
+      api :DELETE, '/api/v1/users/:id', 'Delete a user'
+      param :id, :number, required: true, desc: 'User ID'
+      description 'Deletes a user by ID.'
+      example <<-JSON
+      {
+        "message": "User deleted successfully"
+      }
+      JSON
+      def destroy
+        outcome = Api::V1::Users::DeleteUser.run(id: params[:id])
+
+        if outcome.valid?
+          render json: outcome.result, status: :ok
+        else
+          render json: { errors: outcome.errors.full_messages }, status: :unprocessable_entity
+        end
       end
 
       private
