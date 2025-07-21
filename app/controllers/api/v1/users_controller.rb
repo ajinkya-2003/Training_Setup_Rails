@@ -4,7 +4,7 @@ module Api
       include ActionController::MimeResponds
       skip_before_action :verify_authenticity_token
 
-      #Apipie param documentation (DRY)
+      # Apipie param documentation (DRY)
       def self.user_params_apipie_docs(required: false)
         param :first_name, String, desc: 'First name of the user', required: required
         param :last_name, String, desc: 'Last name of the user', required: required
@@ -26,11 +26,15 @@ module Api
       EOS
 
       # GET /api/v1/users
-      api :GET, '/api/v1/users', 'Get all users'
-      description 'Returns a list of all users.'
+      api :GET, '/api/v1/users', 'Get all users (with optional filters)'
+      param :first_name, String, desc: 'Filter by first name'
+      param :last_name, String, desc: 'Filter by last name'
+      param :email, String, desc: 'Filter by email'
+      description 'Returns a list of users. Filters: first_name, last_name, email.'
       example "[#{USER_RESPONSE_EXAMPLE.strip}]"
       def index
-        render json: User.all, each_serializer: UserSerializer
+        users = Api::V1::UsersQuery.new(params).call
+        render json: users, each_serializer: UserSerializer
       end
 
       # GET /api/v1/users/:id
