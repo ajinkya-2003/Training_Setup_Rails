@@ -1,6 +1,8 @@
 class ApplicationController < ActionController::Base
   before_action :configure_permitted_parameters, if: :devise_controller?
-  before_action :authenticate_admin!, unless: :devise_controller?
+
+  # ✅ Apply token auth only for API requests
+  before_action :authenticate_admin!, if: :api_request?
 
   protected
 
@@ -11,16 +13,17 @@ class ApplicationController < ActionController::Base
 
   private
 
+  # ✅ Detect if the request is an API call
+  def api_request?
+    request.format.json? || request.path.start_with?("/api/")
+  end
+
   def authenticate_admin!
     token_value = request.headers['Authorization']
     return render_unauthorized unless token_value.present?
 
     token = Token.find_by(value: token_value)
-
-    # ❗ Fix: reject if token is missing or expired
-    if token.nil? || token.expired_at.blank? || token.expired_at <= Time.current
-      return render_unauthorized
-    end
+    return render_unauthorized if token.nil? || token.expired_at <= Time.current
   end
 
   def render_unauthorized
