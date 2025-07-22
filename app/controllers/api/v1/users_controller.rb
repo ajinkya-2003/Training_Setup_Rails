@@ -1,7 +1,6 @@
 module Api
   module V1
     class UsersController < ApplicationController
-      include ActionController::MimeResponds
       skip_before_action :verify_authenticity_token
 
       # Apipie param documentation (DRY)
@@ -15,23 +14,12 @@ module Api
         param :date_of_birth, String, desc: 'Date of birth (YYYY-MM-DD)', required: required
       end
 
-      USER_RESPONSE_EXAMPLE = <<-EOS
-      {
-        "id": 1,
-        "first_name": "Ajinkya",
-        "last_name": "Pimpalkar",
-        "email": "ajinkya@example.com",
-        "created_at": "2025-07-15T05:00:00Z"
-      }
-      EOS
-
       # GET /api/v1/users
       api :GET, '/api/v1/users', 'Get all users (with optional filters)'
       param :first_name, String, desc: 'Filter by first name'
       param :last_name, String, desc: 'Filter by last name'
       param :email, String, desc: 'Filter by email'
       description 'Returns a list of users. Filters: first_name, last_name, email.'
-      example "[#{USER_RESPONSE_EXAMPLE.strip}]"
       def index
         users = Api::V1::UsersQuery.new(params).call
         render json: users, each_serializer: UserSerializer
@@ -41,7 +29,6 @@ module Api
       api :GET, '/api/v1/users/:id', 'Get a user by ID'
       param :id, :number, required: true, desc: 'User ID'
       description 'Returns details of a single user.'
-      example USER_RESPONSE_EXAMPLE
       def show
         user = User.find_by(id: params[:id])
         if user
@@ -90,11 +77,6 @@ module Api
       api :DELETE, '/api/v1/users/:id', 'Delete a user'
       param :id, :number, required: true, desc: 'User ID'
       description 'Deletes a user by ID.'
-      example <<-JSON
-      {
-        "message": "User deleted successfully"
-      }
-      JSON
       def destroy
         outcome = Api::V1::Users::DeleteUser.run(id: params[:id])
 
