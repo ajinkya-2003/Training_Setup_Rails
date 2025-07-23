@@ -76,3 +76,6 @@ gem 'devise'
 gem 'apipie-rails'
 gem 'active_model_serializers'
 gem 'active_interaction'
+
+gem "mini_magick", "~> 5.3"
+gem 'image_processing', '~> 1.12'
