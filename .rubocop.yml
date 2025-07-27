@@ -1,8 +1,118 @@
-# Omakase Ruby styling for Rails
-inherit_gem: { rubocop-rails-omakase: rubocop.yml }
+# Inherit rules from auto-generated TODO file (ignores existing offenses temporarily)
+inherit_from: .rubocop_todo.yml
 
-# Overwrite or add rules to create your own house style
-#
-# # Use `[a, [b, c]]` not `[ a, [ b, c ] ]`
-# Layout/SpaceInsideArrayLiteralBrackets:
-#   Enabled: false
+# Enable Rails-specific RuboCop cops
+plugins:
+  - rubocop-rails
+
+AllCops:
+  # Enable newly added cops by default
+  NewCops: enable
+
+  # Disable suggestions for extension gems like rubocop-capybara
+  SuggestExtensions: false
+
+  # Exclude specific files/directories from inspection
+  Exclude:
+    - 'bin/**/*'            # Ignore auto-generated binaries (e.g., bin/rails)
+    - 'db/queue_schema.rb'  # Ignore background job queue schema file
+
+# Disable the requirement for documentation comments on classes/modules
+Style/Documentation:
+  Enabled: false
+
+# -------------------
+# Layout Cops (Indentation, Spacing, Line breaks)
+# -------------------
+
+Layout/AssignmentIndentation:
+  Enabled: true            # Enforce proper indentation for assignments
+
+Layout/CommentIndentation:
+  Enabled: true            # Ensure comments are properly indented
+
+Layout/EmptyLines:
+  Enabled: true            # Prevent multiple consecutive empty lines
+
+Layout/EmptyLineBetweenDefs:
+  Enabled: true            # Require empty lines between method definitions
+
+Layout/FirstHashElementIndentation:
+  Enabled: true
+  EnforcedStyle: consistent # Consistent indentation for hash keys
+
+Layout/IndentationConsistency:
+  Enabled: true
+  EnforcedStyle: normal     # Enforce consistent indentation across code
+
+Layout/IndentationStyle:
+  Enabled: true
+  EnforcedStyle: spaces     # Only allow spaces (not tabs) for indentation
+
+Layout/IndentationWidth:
+  Enabled: true
+  Width: 2                  # Enforce 2-space indentation (Ruby convention)
+
+Layout/RescueEnsureAlignment:
+  Enabled: true             # Align `rescue` and `ensure` with `begin`
+
+Layout/SpaceAroundBlockParameters:
+  Enabled: true             # Enforce spaces inside block parameters (e.g., |a, b|)
+
+Layout/SpaceBeforeBlockBraces:
+  Enabled: true             # Require a space before block braces (e.g., `do |x|`)
+
+Layout/SpaceInsideBlockBraces:
+  Enabled: true             # Require spacing inside block braces `{ |x| ... }`
+
+Layout/SpaceInsideHashLiteralBraces:
+  Enabled: true             # Require spacing inside hash literal braces `{ key: value }`
+
+Layout/TrailingWhitespace:
+  Enabled: true             # Disallow trailing whitespace at end of lines
+
+# -------------------
+# Lint Cops (Logical & syntax errors)
+# -------------------
+
+Lint/RequireParentheses:
+  Enabled: true             # Require parentheses when calling methods with arguments
+
+# -------------------
+# Naming Cops (Naming conventions for variables, classes, methods)
+# -------------------
+
+Naming/AsciiIdentifiers:
+  Enabled: true             # Only allow ASCII characters in identifiers
+
+Naming/ClassAndModuleCamelCase:
+  Enabled: true             # Enforce CamelCase for class/module names
+
+Naming/FileName:
+  Enabled: true             # Ensure file names match class/module names
+
+Naming/MethodName:
+  Enabled: true             # Enforce snake_case method names
+
+Naming/PredicatePrefix:
+  Enabled: true             # Enforce use of `?` for predicate methods (e.g., `active?`)
+
+Naming/VariableName:
+  Enabled: true             # Enforce snake_case for variable names
+
+# -------------------
+# Style Cops (Preferred syntax and conventions)
+# -------------------
+
+Style/AndOr:
+  Enabled: true             # Disallow `and`/`or` in favor of `&&`/`||`
+
+Style/BlockDelimiters:
+  Enabled: true             # Use `{}` for single-line blocks, `do...end` for multi-line
+
+Style/HashSyntax:
+  Enabled: true
+  EnforcedStyle: ruby19     # Use Ruby 1.9+ hash syntax (`{ key: 'value' }`)
+
+Style/NumericLiterals:
+  Enabled: true             # Enforce underscores in large numbers (`1_000_000`)
