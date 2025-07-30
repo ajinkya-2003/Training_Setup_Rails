@@ -3,6 +3,13 @@
     Login as <%= params[:role]&.capitalize || "User" %>
   </h2>
 
+  <!-- Flash alert for login errors -->
+  <% if flash[:alert] %>
+    <div class="alert alert-danger text-center">
+      <%= flash[:alert] %>
+    </div>
+  <% end %>
+
   <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
     <%= render "devise/shared/error_messages", resource: resource %>
 
@@ -30,6 +37,9 @@
   <% end %>
 
   <div class="mt-3 text-center">
-    <%= render "devise/shared/links" %>
+    <%# Only show signup link if no specific role is passed (i.e., general login page) %>
+    <% unless params[:role].present? %>
+      <%= render "devise/shared/links" %>
+    <% end %>
   </div>
 </div>

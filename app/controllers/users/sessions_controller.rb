@@ -1,31 +1,45 @@
 # app/controllers/users/sessions_controller.rb
 class Users::SessionsController < Devise::SessionsController
+  before_action :store_role_in_session, only: [:new, :create]
+  after_action :clear_role_in_session, only: [:create]
+
   def new
-    @role = params[:role] # Pass role to form
+    @role = session[:login_role] || params[:role]
     super
   end
 
   def create
-    self.resource = warden.authenticate(auth_options)
+    user = User.find_by(email: params[:user][:email])
 
-    if resource
-      if valid_login_role?(resource)
-        set_flash_message!(:notice, :signed_in)
-        sign_in(resource_name, resource)
-        yield resource if block_given?
-        respond_with resource, location: after_sign_in_path_for(resource)
+    if user && user.valid_password?(params[:user][:password])
+      if valid_login_role?(user)
+        sign_in(resource_name, user)
+        redirect_to after_sign_in_path_for(user), notice: 'Signed in successfully.'
       else
-        sign_out resource
-        flash[:alert] = "You are not authorized to log in as #{requested_role_label}."
-        redirect_to new_user_session_path(role: requested_role)
+        flash.now[:alert] = "Invalid email or password."
+        self.resource = User.new(sign_in_params)
+        clean_up_passwords(resource)
+        @role = session[:login_role]
+        render :new, status: :unprocessable_entity
       end
     else
       flash.now[:alert] = "Invalid email or password."
-      respond_with resource, location: new_user_session_path(role: requested_role), status: :unprocessable_entity
+      self.resource = User.new(sign_in_params)
+      clean_up_passwords(resource)
+      @role = session[:login_role]
+      render :new, status: :unprocessable_entity
     end
   end
 
   private
+
+  def store_role_in_session
+    session[:login_role] = params[:role] if params[:role].present?
+  end
+
+  def clear_role_in_session
+    session.delete(:login_role)
+  end
 
   def valid_login_role?(user)
     return true if requested_role.blank?
@@ -33,10 +47,6 @@ class Users::SessionsController < Devise::SessionsController
   end
 
   def requested_role
-    params[:role] || params.dig(:user, :role_type)
-  end
-
-  def requested_role_label
-    requested_role&.capitalize || "User"
+    session[:login_role] || params[:role] || params.dig(:user, :role_type)
   end
 end
