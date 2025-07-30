@@ -1,8 +1,13 @@
 <div class="container mt-5" style="max-width: 500px;">
-  <h2 class="mb-4 text-center">Login</h2>
+  <h2 class="mb-4 text-center">
+    Login as <%= params[:role]&.capitalize || "User" %>
+  </h2>
 
   <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
     <%= render "devise/shared/error_messages", resource: resource %>
+
+    <!-- Hidden field to persist role -->
+    <%= f.hidden_field :role_type, value: params[:role] %>
 
     <div class="mb-3">
       <%= f.label :email, class: "form-label" %>

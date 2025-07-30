@@ -1,30 +1,28 @@
-# frozen_string_literal: true
-
 Rails.application.routes.draw do
-  # Avatar management (edit, update, delete)
-  resource :avatar, only: [:edit, :update, :destroy]
+  # Devise routes with custom sessions controller
+  devise_for :users, controllers: {
+    sessions: 'users/sessions'
+  }
 
-  # Apipie documentation
-  apipie
-
-  # Devise routes for authentication
-  devise_for :users
-
-  # Homepage
+  # Root and homepage
   root 'pages#homepage'
   get 'homepage', to: 'pages#homepage'
 
-  # Profile management (edit personal data without password)
-  get 'profile/edit', to: 'users#edit_profile', as: :edit_profile
-  patch 'profile/update', to: 'users#update_profile', as: :update_profile
+  # Avatar and profile management
+  resource :avatar, only: [:edit, :update, :destroy]
+  get    'profile/edit',   to: 'users#edit_profile',   as: :edit_profile
+  patch  'profile/update', to: 'users#update_profile', as: :update_profile
 
-  # Restaurant routes (added for sidebar links)
-  resources :restaurants
+  # Restaurants
+  resources :restaurants, only: [:index, :new, :create, :show, :edit, :update, :destroy]
 
-  # API namespace
+  # API
   namespace :api do
     namespace :v1 do
       resources :users, only: [:index, :create, :show, :update, :destroy]
     end
   end
+
+  # API documentation
+  apipie
 end
