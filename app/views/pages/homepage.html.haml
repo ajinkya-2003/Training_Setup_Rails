@@ -3,35 +3,32 @@
 .container-fluid
   - if user_signed_in?
     .row
-      / Sidebar toggle button (always visible)
-      .bg-light.p-2
+      .bg-light.p-2.d-md-none
         %button.btn.btn-primary.mb-3{ type: "button", data: { bs_toggle: "collapse", bs_target: "#sidebar" }, aria_controls: "sidebar", aria_expanded: "false", aria_label: "Toggle menu" }
-          ☰ 
+          ☰
 
-      / Sidebar menu (collapsed by default)
-      .col-md-3.bg-light.collapse#sidebar
-        %h4.text-primary.text-center.mb-4 
+      .col-md-3.bg-light.collapse.d-md-block#sidebar
+        %h4.text-primary.text-center.mt-3 Sidebar Menu
 
-        %ul.nav.flex-column
+        %ul.nav.flex-column.mt-4
           %li.nav-item.dropdown
             %a.nav-link.dropdown-toggle.fw-bold.text-dark{ href: "#", id: "profileDropdown", role: "button", data: { bs_toggle: "dropdown" }, aria: { expanded: "false" } }
               👤 My Profile
-            %ul.dropdown-menu.show.mt-1{ aria: { labelledby: "profileDropdown" }, style: "position: static; float: none;" }
-              %li= link_to "Update Avatar", "#", class: "dropdown-item"
-              %li= link_to "Update Personal Data", "#", class: "dropdown-item"
+            %ul.dropdown-menu.mt-1{ aria: { labelledby: "profileDropdown" } }
+              %li= link_to "Update Avatar", edit_avatar_path, class: "dropdown-item"
+              %li= link_to "Update Personal Data", edit_profile_path, class: "dropdown-item"
 
           %li.nav-item.dropdown.mt-3
             %a.nav-link.dropdown-toggle.fw-bold.text-dark{ href: "#", id: "restaurantDropdown", role: "button", data: { bs_toggle: "dropdown" }, aria: { expanded: "false" } }
               🍽️ Restaurants
-            %ul.dropdown-menu.show.mt-1{ aria: { labelledby: "restaurantDropdown" }, style: "position: static; float: none;" }
-              %li= link_to "Restaurants", "#", class: "dropdown-item"
-              %li= link_to "Create Restaurant", "#", class: "dropdown-item"
+            %ul.dropdown-menu.mt-1{ aria: { labelledby: "restaurantDropdown" } }
+              %li= link_to "Restaurants", restaurants_path, class: "dropdown-item"
+              %li= link_to "Create Restaurant", new_restaurant_path, class: "dropdown-item"
 
           %li.nav-item.mt-4
-            = link_to "🚪 Sign out", destroy_user_session_path, method: :delete, data: { turbo_method: :delete }, class: "btn btn-outline-danger w-100"
+            = button_to "🚪 Sign out", destroy_user_session_path, method: :delete, class: "btn btn-outline-danger w-100"
 
-      / Main content
-      .col-md-9.text-center.mt-5
+      .col-md-9.mt-4.text-center
         %h1.display-4 Welcome to My Rails App!
         %p.lead This is your homepage.
         %p.text-success.mt-4
@@ -42,6 +39,7 @@
     .text-center.mt-5
       %h1.display-4 Welcome to My Rails App!
       %p.lead This is your homepage.
-      .mt-4.d-flex.justify-content-center.gap-2
+      .mt-4.d-flex.justify-content-center.gap-3
         = link_to "Register", new_user_registration_path, class: "btn btn-primary btn-lg"
-        = link_to "Login", new_user_session_path, class: "btn btn-secondary btn-lg"
+        = link_to "Staff Login", new_user_session_path(role: 'staff'), class: "btn btn-success btn-lg"
+        = link_to "Customer Login", new_user_session_path(role: 'customer'), class: "btn btn-info btn-lg"
