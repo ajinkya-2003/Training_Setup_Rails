@@ -1,52 +1,33 @@
 # app/controllers/users/sessions_controller.rb
 class Users::SessionsController < Devise::SessionsController
-  before_action :store_role_in_session, only: [:new, :create]
-  after_action :clear_role_in_session, only: [:create]
+  before_action :set_role
 
   def new
-    @role = session[:login_role] || params[:role]
     super
   end
 
   def create
-    user = User.find_by(email: params[:user][:email])
+    self.resource = warden.authenticate(auth_options)
 
-    if user && user.valid_password?(params[:user][:password])
-      if valid_login_role?(user)
-        sign_in(resource_name, user)
-        redirect_to after_sign_in_path_for(user), notice: 'Signed in successfully.'
+    if resource
+      if resource.role_type == @role
+        set_flash_message!(:notice, :signed_in)
+        sign_in(resource_name, resource)
+        respond_with resource, location: after_sign_in_path_for(resource)
       else
-        flash.now[:alert] = "Invalid email or password."
-        self.resource = User.new(sign_in_params)
-        clean_up_passwords(resource)
-        @role = session[:login_role]
-        render :new, status: :unprocessable_entity
+        sign_out resource # Important: Clear the session
+        flash[:alert] = "You are not authorized to log in as #{@role}."
+        redirect_to new_user_session_path(role: @role)
       end
     else
-      flash.now[:alert] = "Invalid email or password."
-      self.resource = User.new(sign_in_params)
-      clean_up_passwords(resource)
-      @role = session[:login_role]
-      render :new, status: :unprocessable_entity
+      flash[:alert] = 'Invalid email or password.'
+      redirect_to new_user_session_path(role: @role)
     end
   end
 
   private
 
-  def store_role_in_session
-    session[:login_role] = params[:role] if params[:role].present?
-  end
-
-  def clear_role_in_session
-    session.delete(:login_role)
-  end
-
-  def valid_login_role?(user)
-    return true if requested_role.blank?
-    user.role_type == requested_role
-  end
-
-  def requested_role
-    session[:login_role] || params[:role] || params.dig(:user, :role_type)
+  def set_role
+    @role = params[:role] || params.dig(resource_name, :role_type)
   end
 end
