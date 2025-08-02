@@ -1,0 +1,36 @@
+<h1 class="mb-4">My Restaurants</h1>
+
+<% if @restaurants.any? %>
+  <table class="table table-bordered table-striped">
+    <thead class="table-dark">
+      <tr>
+        <th>Name</th>
+        <th>Location</th>
+        <th>Cuisine</th>
+        <th>Rating</th>
+        <th>Status</th>
+        <th>Created At</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @restaurants.each do |restaurant| %>
+        <tr>
+          <td><%= restaurant.name %></td>
+          <td><%= restaurant.location %></td>
+          <td><%= restaurant.cuisine_type %></td>
+          <td><%= restaurant.rating %></td>
+          <td><%= restaurant.status.capitalize %></td>
+          <td><%= restaurant.created_at.strftime("%d %b %Y, %I:%M %p") %></td>
+          <td>
+            <%= link_to "View Tables", restaurant_restaurant_tables_path(restaurant), class: "btn btn-sm btn-primary" %>
+            <%= link_to 'View Menu', restaurant_menu_path(restaurant), class: 'btn btn-success btn-sm', style: 'margin-left: 5px;' %>
+
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p>You have not created any restaurants yet.</p>
+<% end %>

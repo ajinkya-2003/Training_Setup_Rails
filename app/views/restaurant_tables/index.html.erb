@@ -1,0 +1,111 @@
+<%= link_to '← Back to Restaurants', restaurants_path, class: 'btn btn-secondary mb-3' %>
+<h1 class="mb-4">Tables for <%= @restaurant.name %></h1>
+
+<!-- Filter Form -->
+<div class="card p-3 mb-4">
+  <%= form_with url: restaurant_restaurant_tables_path(@restaurant), method: :get, local: true do |f| %>
+    <div class="row gx-3 gy-2 align-items-end">
+      <div class="col-md-3">
+        <%= f.label :status, "Filter by Status", class: "form-label" %>
+        <%= f.select :status,
+            options_for_select([['All', '']] + RestaurantTable.aasm.states.map { |s| [s.name.to_s.titleize, s.name.to_s] }, params[:status]),
+            {}, class: "form-select" %>
+      </div>
+      <div class="col-md-3">
+        <%= f.label :search, "Search Table ", class: "form-label" %>
+        <%= f.text_field :search, value: params[:search], class: "form-control", placeholder: "e.g. 5" %>
+      </div>
+      <div class="col-md-2">
+        <%= f.submit "Apply", class: "btn btn-primary w-80" %>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<!-- Table -->
+<div class="table-responsive">
+  <table class="table table-striped align-middle">
+    <thead>
+      <tr>
+        <% sortable_columns = { "Table " => "table_number", "Capacity" => "capacity", "Status" => "status", "Created At" => "created_at" } %>
+        <% sortable_columns.each do |label, column| %>
+          <th>
+            <%= link_to label, restaurant_restaurant_tables_path(@restaurant,
+              status: params[:status],
+              search: params[:search],
+              sort: column,
+              direction: (params[:sort] == column && params[:direction] == "asc") ? "desc" : "asc"
+            ), class: "text-decoration-none" %>
+            <% if params[:sort] == column %>
+              <%= params[:direction] == "asc" ? "▲" : "▼" %>
+            <% end %>
+          </th>
+        <% end %>
+      </tr>
+    </thead>
+    <tbody>
+      <% if @tables.any? %>
+        <% @tables.each do |table| %>
+          <tr>
+            <td><%= table.table_number %></td>
+            <td><%= table.capacity %></td>
+            <td><%= table.status.titleize %></td>
+            <td><%= table.created_at.strftime("%d %b %Y, %I:%M %p") %></td>
+          </tr>
+        <% end %>
+      <% else %>
+        <tr>
+          <td colspan="4" class="text-center">No tables found.</td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<!-- Pagination -->
+<div class="d-flex justify-content-center my-3">
+  <%= will_paginate @tables, 
+        class: 'pagination',
+        params: {
+          sort: params[:sort],
+          direction: params[:direction],
+          search: params[:search],
+          status: params[:status]
+        } %>
+</div>
+
+<hr class="my-5">
+
+<!-- Toggle Add Table Form -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="mb-0">Add New Table</h3>
+  <button class="btn btn-outline-success" type="button" data-bs-toggle="collapse" data-bs-target="#addTableForm" aria-expanded="false" aria-controls="addTableForm">
+    + Add Table
+  </button>
+</div>
+
+<div class="collapse" id="addTableForm">
+  <div class="card card-body">
+    <%= form_with model: [@restaurant, @new_table], local: true do |f| %>
+      <div class="row g-3">
+        <div class="col-md-4">
+          <%= f.label :table_number, class: "form-label" %>
+          <%= f.number_field :table_number, class: "form-control" %>
+        </div>
+        <div class="col-md-4">
+          <%= f.label :capacity, class: "form-label" %>
+          <%= f.number_field :capacity, class: "form-control" %>
+        </div>
+        <div class="col-md-4">
+          <%= f.label :status, class: "form-label" %>
+          <%= f.select :status,
+                RestaurantTable.aasm.states.map { |s| [s.name.to_s.titleize, s.name.to_s] },
+                {}, class: "form-select" %>
+        </div>
+        <div class="col-12 d-flex justify-content-end">
+          <%= f.submit "Create Table", class: "btn btn-success" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

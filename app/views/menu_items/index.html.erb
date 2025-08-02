@@ -1,0 +1,62 @@
+<h1 class="mb-4">Menu for <%= @restaurant.name %></h1>
+
+<!-- Add New Menu Item Toggle Button -->
+<%= button_to 'Add New Menu Item', '#', class: 'btn btn-success mb-4', id: 'toggle-form-btn', method: :get %>
+
+<!-- New Menu Item Form (Hidden by default) -->
+<div id="new-menu-form" style="display: none;" class="mb-5">
+  <h3>Add New Menu Item</h3>
+  <%= render 'form', menu_item: @menu_item %>
+</div>
+
+<!-- Menu Table -->
+<div class="table-responsive mb-5">
+  <table class="table table-striped align-middle">
+    <thead>
+      <tr>
+        <th>Item Name</th>
+        <th>Description</th>
+        <th>Price</th>
+        <th>Category</th>
+        <th>Available</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @menu_items.each do |item| %>
+        <tr>
+          <td><%= item.item_name %></td>
+          <td><%= item.description %></td>
+          <td>$<%= '%.2f' % item.price %></td>
+          <td><%= item.category %></td>
+          <td><%= item.available? ? "Yes" : "No" %></td>
+          <td>
+            <%= link_to 'Edit', edit_restaurant_menu_item_path(@restaurant, item), class: 'btn btn-sm btn-warning' %>
+            <%= link_to 'Delete', restaurant_menu_item_path(@restaurant, item),
+                        method: :delete, data: { confirm: 'Are you sure?' },
+                        class: 'btn btn-sm btn-danger' %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<!-- JavaScript to Toggle Form -->
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const toggleBtn = document.getElementById("toggle-form-btn");
+    const formDiv = document.getElementById("new-menu-form");
+
+    toggleBtn.addEventListener("click", function(event) {
+      event.preventDefault();
+      if (formDiv.style.display === "none") {
+        formDiv.style.display = "block";
+        toggleBtn.innerText = "Hide Form";
+      } else {
+        formDiv.style.display = "none";
+        toggleBtn.innerText = "Add New Menu Item";
+      }
+    });
+  });
+</script>

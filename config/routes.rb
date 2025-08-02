@@ -1,16 +1,34 @@
-# frozen_string_literal: true
-
 Rails.application.routes.draw do
-  apipie
+  # Devise routes with custom sessions controller
+  devise_for :users, controllers: {
+    sessions: 'users/sessions'
+  }
 
-  devise_for :users
-
+  # Root and homepage
   root 'pages#homepage'
   get 'homepage', to: 'pages#homepage'
 
+  # Avatar and profile management
+  resource :avatar, only: [:edit, :update, :destroy]
+  get    'profile/edit',   to: 'users#edit_profile',   as: :edit_profile
+  patch  'profile/update', to: 'users#update_profile', as: :update_profile
+
+  # Restaurants and their nested restaurant tables and menu items
+  resources :restaurants do
+    resources :restaurant_tables, path: 'tables'
+
+    # Menu management
+    get 'menu', to: 'menu_items#index', as: :menu
+    resources :menu_items, except: [:index, :show]
+  end
+
+  # API
   namespace :api do
     namespace :v1 do
-      resources :users, only: [:index]
+      resources :users, only: [:index, :create, :show, :update, :destroy]
     end
   end
+
+  # API documentation (Apipie)
+  apipie
 end
