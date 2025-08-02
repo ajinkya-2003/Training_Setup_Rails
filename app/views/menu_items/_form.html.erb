@@ -1,0 +1,42 @@
+<%= form_with(model: [@restaurant, menu_item], local: true, html: { class: "mt-4" }) do |f| %>
+  <div class="row g-4">
+
+    <!-- Item Name -->
+    <div class="col-md-6">
+      <%= f.label :item_name, class: "form-label" %>
+      <%= f.text_field :item_name, class: "form-control", required: true, placeholder: "Enter item name" %>
+    </div>
+
+    <!-- Category -->
+    <div class="col-md-6">
+      <%= f.label :category, class: "form-label" %>
+      <%= f.text_field :category, class: "form-control", placeholder: "e.g., Appetizer, Main Course" %>
+    </div>
+
+    <!-- Description -->
+    <div class="col-md-12">
+      <%= f.label :description, class: "form-label" %>
+      <%= f.text_area :description, class: "form-control", rows: 3, placeholder: "Optional description" %>
+    </div>
+
+    <!-- Price -->
+    <div class="col-md-4">
+      <%= f.label :price, class: "form-label" %>
+      <%= f.number_field :price, step: 0.01, class: "form-control", required: true, placeholder: "e.g., 9.99" %>
+    </div>
+
+    <!-- Available Checkbox -->
+    <div class="col-md-4 d-flex align-items-center mt-4">
+      <div>
+        <%= f.check_box :available, class: "form-check-input me-2" %>
+        <%= f.label :available, "Available?", class: "form-check-label" %>
+      </div>
+    </div>
+
+    <!-- Submit -->
+    <div class="col-12 text-end mt-3">
+      <%= f.submit menu_item.new_record? ? "Create Item" : "Update Item", class: "btn btn-success" %>
+    </div>
+    
+  </div>
+<% end %>

@@ -24,6 +24,8 @@
           <td><%= restaurant.created_at.strftime("%d %b %Y, %I:%M %p") %></td>
           <td>
             <%= link_to "View Tables", restaurant_restaurant_tables_path(restaurant), class: "btn btn-sm btn-primary" %>
+            <%= link_to 'View Menu', restaurant_menu_path(restaurant), class: 'btn btn-success btn-sm', style: 'margin-left: 5px;' %>
+
           </td>
         </tr>
       <% end %>

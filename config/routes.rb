@@ -13,9 +13,13 @@ Rails.application.routes.draw do
   get    'profile/edit',   to: 'users#edit_profile',   as: :edit_profile
   patch  'profile/update', to: 'users#update_profile', as: :update_profile
 
-  # Restaurants and their nested restaurant tables
+  # Restaurants and their nested restaurant tables and menu items
   resources :restaurants do
     resources :restaurant_tables, path: 'tables'
+
+    # Menu management
+    get 'menu', to: 'menu_items#index', as: :menu
+    resources :menu_items, except: [:index, :show]
   end
 
   # API
