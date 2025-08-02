@@ -13,8 +13,10 @@ Rails.application.routes.draw do
   get    'profile/edit',   to: 'users#edit_profile',   as: :edit_profile
   patch  'profile/update', to: 'users#update_profile', as: :update_profile
 
-  # Restaurants
-  resources :restaurants, only: [:index, :new, :create, :show, :edit, :update, :destroy]
+  # Restaurants and their nested restaurant tables
+  resources :restaurants do
+    resources :restaurant_tables, path: 'tables'
+  end
 
   # API
   namespace :api do
@@ -23,6 +25,6 @@ Rails.application.routes.draw do
     end
   end
 
-  # API documentation
+  # API documentation (Apipie)
   apipie
 end

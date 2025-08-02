@@ -1,5 +1,6 @@
 class RestaurantsController < ApplicationController
   before_action :authenticate_user!
+  before_action :require_staff!
 
   def index
     @restaurants = current_user.restaurants
@@ -19,6 +20,10 @@ class RestaurantsController < ApplicationController
       flash.now[:alert] = 'Please fix the errors below.'
       render :new, status: :unprocessable_entity
     end
+  end
+
+  def show
+    @restaurant = current_user.restaurants.find(params[:id])
   end
 
   private
