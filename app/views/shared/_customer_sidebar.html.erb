@@ -1,0 +1,28 @@
+<ul class="list-unstyled">
+  <li>
+    <a data-bs-toggle="collapse" href="#profileSubmenu" role="button" aria-expanded="false" aria-controls="profileSubmenu">
+      <i class="bi bi-person-circle"></i> Profile
+    </a>
+    <ul class="collapse ps-3" id="profileSubmenu">
+      <li><%= link_to 'Update Profile Picture', edit_avatar_path, class: "d-block py-1" %></li>
+      <li><%= link_to 'Update Personal Information', edit_profile_path, class: "d-block py-1" %></li>
+    </ul>
+  </li>
+
+  <li class="mt-3">
+    <a data-bs-toggle="collapse" href="#ordersSubmenu" role="button" aria-expanded="false" aria-controls="ordersSubmenu">
+      <i class="bi bi-receipt"></i> Orders
+    </a>
+    <ul class="collapse ps-3" id="ordersSubmenu">
+      <li><a href="#" class="d-block py-1 text-muted">List of Orders </a></li>
+      <li><a href="#" class="d-block py-1 text-muted">Current Orders</a></li>
+      <li><a href="#" class="d-block py-1 text-muted">Past Orders </a></li>
+    </ul>
+  </li>
+
+  <li class="mt-3">
+    <%= button_to destroy_user_session_path, method: :delete, class: "btn text-danger ps-0", data: { confirm: "Are you sure you want to sign out?" } do %>
+      <i class="bi bi-box-arrow-right"></i> Sign Out
+    <% end %>
+  </li>
+</ul>
