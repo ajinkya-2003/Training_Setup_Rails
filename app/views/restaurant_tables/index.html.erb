@@ -12,7 +12,7 @@
             {}, class: "form-select" %>
       </div>
       <div class="col-md-3">
-        <%= f.label :search, "Search Table ", class: "form-label" %>
+        <%= f.label :search, "Search Table", class: "form-label" %>
         <%= f.text_field :search, value: params[:search], class: "form-control", placeholder: "e.g. 5" %>
       </div>
       <div class="col-md-2">
@@ -41,6 +41,7 @@
             <% end %>
           </th>
         <% end %>
+        <th>Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -51,11 +52,51 @@
             <td><%= table.capacity %></td>
             <td><%= table.status.titleize %></td>
             <td><%= table.created_at.strftime("%d %b %Y, %I:%M %p") %></td>
+            <td>
+              <div class="btn-group">
+                <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#editForm<%= table.id %>">
+                  Edit
+                </button>
+                <%= button_to "Delete", restaurant_restaurant_table_path(@restaurant, table),
+                      method: :delete,
+                      data: { confirm: "Are you sure?" },
+                      class: "btn btn-sm btn-outline-danger ms-2" %>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Inline Edit Form (Collapsed) -->
+          <tr class="collapse" id="editForm<%= table.id %>">
+            <td colspan="5">
+              <div class="card card-body">
+                <%= form_with model: [@restaurant, table], url: restaurant_restaurant_table_path(@restaurant, table), method: :put, local: true do |f| %>
+                  <div class="row g-3 align-items-end">
+                    <div class="col-md-3">
+                      <%= f.label :table_number, class: "form-label" %>
+                      <%= f.number_field :table_number, class: "form-control" %>
+                    </div>
+                    <div class="col-md-3">
+                      <%= f.label :capacity, class: "form-label" %>
+                      <%= f.number_field :capacity, class: "form-control" %>
+                    </div>
+                    <div class="col-md-3">
+                      <%= f.label :status, class: "form-label" %>
+                      <%= f.select :status,
+                            RestaurantTable.aasm.states.map { |s| [s.name.to_s.titleize, s.name.to_s] },
+                            {}, class: "form-select" %>
+                    </div>
+                    <div class="col-md-3 d-flex justify-content-end">
+                      <%= f.submit "Update", class: "btn btn-primary" %>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+            </td>
           </tr>
         <% end %>
       <% else %>
         <tr>
-          <td colspan="4" class="text-center">No tables found.</td>
+          <td colspan="5" class="text-center">No tables found.</td>
         </tr>
       <% end %>
     </tbody>
@@ -64,7 +105,7 @@
 
 <!-- Pagination -->
 <div class="d-flex justify-content-center my-3">
-  <%= will_paginate @tables, 
+  <%= will_paginate @tables,
         class: 'pagination',
         params: {
           sort: params[:sort],

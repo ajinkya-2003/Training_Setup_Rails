@@ -1,6 +1,7 @@
 class RestaurantTablesController < ApplicationController
   before_action :authenticate_user!
   before_action :set_restaurant
+  before_action :set_table, only: [:edit, :update, :destroy]
 
   def index
     tables = @restaurant.restaurant_tables
@@ -29,7 +30,6 @@ class RestaurantTablesController < ApplicationController
     @table = @restaurant.restaurant_tables.new(table_params)
 
     if @table.save
-      # ✅ Correct path helper (nested route)
       redirect_to restaurant_restaurant_tables_path(@restaurant), notice: 'Table added successfully.'
     else
       @tables = @restaurant.restaurant_tables.order(created_at: :desc).paginate(page: params[:page], per_page: 5)
@@ -39,10 +39,32 @@ class RestaurantTablesController < ApplicationController
     end
   end
 
+  def edit
+    # Renders edit.html.erb with @restaurant and @table set
+  end
+
+  def update
+    if @table.update(table_params)
+      redirect_to restaurant_restaurant_tables_path(@restaurant), notice: 'Table updated successfully.'
+    else
+      flash.now[:alert] = 'Failed to update table.'
+      render :edit, status: :unprocessable_entity
+    end
+  end
+
+  def destroy
+    @table.destroy
+    redirect_to restaurant_restaurant_tables_path(@restaurant), notice: 'Table deleted successfully.'
+  end
+
   private
 
   def set_restaurant
     @restaurant = current_user.restaurants.find(params[:restaurant_id])
+  end
+
+  def set_table
+    @table = @restaurant.restaurant_tables.find(params[:id])
   end
 
   def table_params
