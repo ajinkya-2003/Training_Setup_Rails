@@ -60,6 +60,9 @@ end
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem 'web-console'
+
+  gem 'letter_opener'
+  gem 'letter_opener_web'
 end
 
 group :test do
@@ -77,5 +80,8 @@ gem 'apipie-rails'
 gem 'active_model_serializers'
 gem 'active_interaction'
 
-gem "mini_magick", "~> 5.3"
+gem "mini_magick"
+
 gem 'image_processing', '~> 1.12'
+gem 'aasm'
+gem 'will_paginate', '~> 3.3'
