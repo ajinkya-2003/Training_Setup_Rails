@@ -1,0 +1,43 @@
+<h1>Edit Personal Data</h1>
+
+<%= form_with model: @user, url: update_profile_path, method: :patch, local: true do |f| %>
+  <% if @user.errors.any? %>
+    <div id="error_explanation" style="color: red; margin-bottom: 1em;">
+      <h2><%= pluralize(@user.errors.count, "error") %> prevented the profile from being saved:</h2>
+      <ul>
+        <% @user.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= f.label :first_name %><br>
+    <%= f.text_field :first_name, required: true %>
+  </div>
+
+  <div>
+    <%= f.label :last_name %><br>
+    <%= f.text_field :last_name, required: true %>
+  </div>
+
+  <div>
+    <%= f.label :email %><br>
+    <%= f.email_field :email, required: true %>
+  </div>
+
+  <div>
+    <%= f.label :age %><br>
+    <%= f.number_field :age, min: 0, required: true %>
+  </div>
+
+  <div>
+    <%= f.label :date_of_birth %><br>
+    <%= f.date_field :date_of_birth, required: true %>
+  </div>
+
+  <div style="margin-top: 1em;">
+    <%= f.submit 'Update' %>
+  </div>
+<% end %>
