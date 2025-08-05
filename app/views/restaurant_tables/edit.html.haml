@@ -1,0 +1,25 @@
+= link_to '← Back', restaurant_restaurant_tables_path(@restaurant), class: "btn btn-secondary mb-3"
+
+%h2 Edit Table
+
+= form_with model: [@restaurant, @table], local: true do |f|
+  - if @table.errors.any?
+    .alert.alert-danger
+      %h5= "#{pluralize(@table.errors.count, 'error')} prohibited this table from being saved:"
+      %ul
+        - @table.errors.full_messages.each do |msg|
+          %li= msg
+
+  .mb-3
+    = f.label :table_number, class: "form-label"
+    = f.number_field :table_number, class: "form-control", min: 1
+
+  .mb-3
+    = f.label :capacity, class: "form-label"
+    = f.number_field :capacity, class: "form-control", min: 1
+
+  .mb-3
+    = f.label :status, class: "form-label"
+    = f.select :status, RestaurantTable.aasm.states.map { |s| [s.name.to_s.titleize, s.name.to_s] }, {}, class: "form-select"
+
+  = f.submit "Update Table", class: "btn btn-primary"

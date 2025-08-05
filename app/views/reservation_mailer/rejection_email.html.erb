@@ -1,0 +1,11 @@
+<h2>Hello <%= @reservation.customer_name %>,</h2>
+
+<p>We regret to inform you that your reservation request at <strong><%= @reservation.restaurant.name %></strong> has been rejected.</p>
+
+<p>
+  <strong>Date:</strong> <%= @reservation.reservation_date %><br>
+  <strong>Time:</strong> <%= @reservation.reservation_time.strftime("%I:%M %p") %><br>
+  <strong>Guests:</strong> <%= @reservation.number_of_guests %>
+</p>
+
+<p>We apologize for the inconvenience. Please feel free to try booking for another time.</p>

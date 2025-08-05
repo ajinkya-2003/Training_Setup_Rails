@@ -1,0 +1,32 @@
+<h2>Make a Reservation at <%= @restaurant.name %></h2>
+
+<%= form_with(model: [@restaurant, @reservation], local: true) do |f| %>
+  <div>
+    <%= f.label :reservation_date %>
+    <%= f.date_field :reservation_date %>
+  </div>
+
+  <div>
+    <%= f.label :reservation_time %>
+    <%= f.time_field :reservation_time %>
+  </div>
+
+  <div>
+    <%= f.label :number_of_guests %>
+    <%= f.number_field :number_of_guests %>
+  </div>
+
+  <div>
+    <%= f.label :customer_name %>
+    <%= f.text_field :customer_name %>
+  </div>
+
+  <div>
+    <%= f.label :customer_contact %>
+    <%= f.text_field :customer_contact %>
+  </div>
+
+  <div>
+    <%= f.submit 'Reserve Table', class: 'btn btn-primary' %>
+  </div>
+<% end %>
