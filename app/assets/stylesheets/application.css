@@ -12,3 +12,12 @@ body {
   background-color: #f8f9fa;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
+
+/* Sidebar slide-in animation */
+#sidebar {
+  transition: all 0.3s ease;
+}
+
+body .position-fixed#sidebar.collapsing {
+  transition: none;
+}
